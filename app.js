@@ -12,33 +12,32 @@ const { apiRouter } = require("./api/v1/routes");
 
 const app = express();
 
+// Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.use(morgan("dev")); // global middleware
+// Logging middleware
+app.use(morgan("dev"));
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://v1-spotify-clone-fn.vercel.app"
-];
+// ✅ CORS Setup: Allow frontend and credentials
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "https://v1-spotify-clone-fn.vercel.app",
+    credentials: true, // Allow cookies
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
-
-
+// Parse JSON and cookies
 app.use(express.json());
 app.use(cookieParser());
 
+// Mount routes
 app.use("/api/v1", apiRouter);
 app.use("/api/songs", songRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log("-------- Server started --------");
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`-------- Server started on port ${PORT} --------`);
 });
