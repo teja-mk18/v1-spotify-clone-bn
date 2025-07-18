@@ -2,12 +2,11 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const { uploadAudio, getAllSongs } = require("../controllers/songController");
 const {
-  uploadAudio,
-  fetchMetadata,
-  getAllSongs,
-} = require("../controllers/songController");
-const { verifyToken, isAdmin } = require("../middleware/auth");
+  userAuthenticationMiddleware,
+  isAdmin,
+} = require("../api/v1/middleware");
 
 // Configure multer for local file storage
 const storage = multer.diskStorage({
@@ -24,12 +23,15 @@ const upload = multer({ storage });
 // Routes
 router.post(
   "/upload",
-  verifyToken,
-  isAdmin,
+  userAuthenticationMiddleware, // ✅ this replaces verifyToken
+  // isAdmin, // <-- optional: only allow admin to upload
   upload.single("audio"),
   uploadAudio
 );
-router.post("/fetch-metadata/:id", verifyToken, isAdmin, fetchMetadata);
+
+// ❌ Removed the manual fetch-metadata route
+// router.post("/fetch-metadata/:id", userAuthenticationMiddleware, fetchMetadata);
+
 router.get("/", getAllSongs);
 
 module.exports = router;
