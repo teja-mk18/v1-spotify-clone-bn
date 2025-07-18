@@ -8,6 +8,7 @@ const userAuthenticationMiddleware = (req, res, next) => {
     // console.log("--> authorization", authorization);
     if (!authorization) {
       res.status(401).json({ isSuccess: false, message: "Token not found!" });
+      return;
     }
     jwt.verify(
       authorization,
@@ -19,6 +20,7 @@ const userAuthenticationMiddleware = (req, res, next) => {
             message: "Invalid token!",
             data: {},
           });
+          return;
         } else {
           req.user = decodedData;
           next();

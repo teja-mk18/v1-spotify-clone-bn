@@ -18,4 +18,14 @@ apiRouter.use(userAuthenticationMiddleware); // authentication
 apiRouter.use("/users", usersRouter);
 apiRouter.use("/liked", likedRoutes);
 
+// Add health check endpoint
+apiRouter.get("/health", (req, res) => {
+  res.status(200).json({
+    isSuccess: true,
+    message: "Backend is running!",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 module.exports = { apiRouter };

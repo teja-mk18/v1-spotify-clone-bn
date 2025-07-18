@@ -35,11 +35,12 @@ const userSignupController = async (req, res) => {
         message: "Please resend the otp!",
         data: {},
       });
+      return;
     }
 
     const { otp: hashedOtp } = sentOtpDoc;
 
-    const isCorrect = bcrypt.compare(otp.toString(), hashedOtp);
+    const isCorrect = await bcrypt.compare(otp.toString(), hashedOtp);
 
     if (!isCorrect) {
       res.status(400).json({
@@ -47,6 +48,7 @@ const userSignupController = async (req, res) => {
         message: "Incorrect otp! Please try again...",
         data: {},
       });
+      return;
     }
 
     await UserModel.create({ email, password });

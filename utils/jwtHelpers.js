@@ -5,8 +5,8 @@ const attachJWTToken = (res, data) => {
 
     res.cookie("authorization", token, {
         maxAge: 1 * 24 * 60 * 60 * 1000,
-        secure: true, // only sent over https connections
-        sameSite: "Strict", // only our backend will get this cookie (no other backend can access it)
+        secure: process.env.NODE_ENV === 'production', // only secure in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // allow cross-site in production
         httpOnly: true, // frontend will not be able to read this cookie
         // so that our token is out of reach of javascript --> hackers
     });
@@ -15,8 +15,8 @@ const attachJWTToken = (res, data) => {
 const removeJWTToken = (res) => {
     res.cookie("authorization", "", {
         maxAge: 0,
-        secure: true, // only sent over https connections
-        sameSite: "Strict", // only our backend will get this cookie (no other backend can access it)
+        secure: process.env.NODE_ENV === 'production', // only secure in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // allow cross-site in production
         httpOnly: true, // frontend will not be able to read this cookie
         // so that our token is out of reach of javascript --> hackers
     });
